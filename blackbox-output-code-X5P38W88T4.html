@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Tracker</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #tracker-form { margin-bottom: 20px; }
+        #tracker-list { list-style: none; padding: 0; }
+        li { padding: 10px; border: 1px solid #ccc; margin-bottom: 5px; }
+        button { padding: 5px 10px; margin-left: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Personal Goal Tracker</h1>
+    <form id="tracker-form">
+        <input type="text" id="item-input" placeholder="Enter what you tracked (e.g., 'Ran 5 miles')" required>
+        <button type="submit">Add</button>
+    </form>
+    <ul id="tracker-list"></ul>
+
+    <script>
+        const form = document.getElementById('tracker-form');
+        const input = document.getElementById('item-input');
+        const list = document.getElementById('tracker-list');
+
+        // Load saved items from local storage
+        let items = JSON.parse(localStorage.getItem('trackerItems')) || [];
+
+        function renderItems() {
+            list.innerHTML = '';
+            items.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => {
+                    items.splice(index, 1);
+                    saveItems();
+                    renderItems();
+                };
+                li.appendChild(deleteBtn);
+                list.appendChild(li);
+            });
+        }
+
+        function saveItems() {
+            localStorage.setItem('trackerItems', JSON.stringify(items));
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (input.value.trim()) {
+                items.push(input.value.trim());
+                saveItems();
+                renderItems();
+                input.value = '';
+            }
+        });
+
+        // Initial render
+        renderItems();
+    </script>
+</body>
+</html>
